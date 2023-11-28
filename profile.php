@@ -1,4 +1,6 @@
 <?php
+$page = "Profile";
+require_once "includes/session.php";
 require_once "components/header.php";
 require_once "components/topbar.php";
 require_once "components/sidebar.php";

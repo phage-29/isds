@@ -1,4 +1,5 @@
 <?php
+require_once "includes/conn.php";
 require_once "components/header.php";
 ?>
 <main>
@@ -12,7 +13,7 @@ require_once "components/header.php";
             <div class="d-flex justify-content-center py-4">
               <a href="index.html" class="logo d-flex align-items-center w-auto">
                 <img src="assets/img/logo.png" alt="">
-                <span class="d-none d-lg-block">NiceAdmin</span>
+                <span class="d-none d-lg-block"><?= $website ?></span>
               </a>
             </div><!-- End Logo -->
 
@@ -67,6 +68,13 @@ require_once "components/header.php";
                 <script>
                   $(document).ready(function() {
                     $("#Login").submit(function(e) {
+                      Swal.fire({
+                        title: "Loading",
+                        html: "Please wait...",
+                        didOpen: () => {
+                          Swal.showLoading();
+                        }
+                      });
                       e.preventDefault();
                       var formData = $(this).serialize();
                       $.ajax({
@@ -75,40 +83,40 @@ require_once "components/header.php";
                         data: formData,
                         dataType: 'json',
                         success: function(response) {
-                          Swal.fire({
-                            icon: response.status,
-                            title: response.message,
-                            showConfirmButton: false,
-                            timer: 1000
-                          }).then(function() {
-                            if (response.redirect) {
-                              window.location.href = response.redirect
-                            }
-                          })
+                          setTimeout(function() {
+                            Swal.fire({
+                              icon: response.status,
+                              title: response.message,
+                              showConfirmButton: false,
+                              timer: 1000
+                            }).then(function() {
+                              if (response.redirect) {
+                                window.location.href = response.redirect
+                              }
+                            })
+                          }, 1000)
                         },
                         error: function(error) {
                           // Handle errors here
                           console.log("Error:", error);
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'Something went wrong',
-                            showConfirmButton: false,
-                            timer: 750
-                          }).then(function() {
-                            if (response.redirect) {
-                              window.location.href = response.redirect
-                            }
-                          })
+                          setTimeout(function() {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Something went wrong',
+                              showConfirmButton: false,
+                              timer: 750
+                            }).then(function() {
+                              if (response.redirect) {
+                                window.location.href = response.redirect
+                              }
+                            })
+                          }, 1000)
                         },
                       });
                     });
                   });
                 </script>
               </div>
-            </div>
-
-            <div class="position-absolute bottom-0 end-0 m-3">
-              Developed by <a href="#">Phage</a>
             </div>
 
           </div>
