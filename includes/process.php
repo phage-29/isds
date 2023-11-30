@@ -13,10 +13,10 @@ if (isset($_POST['Login'])) {
     $Username = $conn->real_escape_string($_POST['Username']);
     $Password = $conn->real_escape_string($_POST['Password']);
 
-    $query = "SELECT * FROM `users` where `Username`=?";
+    $query = "SELECT * FROM `users` where `Username`=? or `Email`=?";
 
     try {
-        $result = $conn->execute_query($query, [$Username]);
+        $result = $conn->execute_query($query, [$Username, $Username]);
 
         if ($result && $result->num_rows === 1) {
 
@@ -38,7 +38,7 @@ if (isset($_POST['Login'])) {
         } else {
 
             $response['status'] = 'error';
-            $response['message'] = 'Username not found!';
+            $response['message'] = 'Username or Email not found!';
         }
     } catch (Exception $e) {
         $response['status'] = 'error';
@@ -46,24 +46,74 @@ if (isset($_POST['Login'])) {
     }
 }
 
-if (isset($_POST['UpdateProfile'])) {
+if (isset($_POST['Registration'])) {
     $FirstName = $conn->real_escape_string($_POST['FirstName']);
     $MiddleName = $conn->real_escape_string($_POST['MiddleName']);
     $LastName = $conn->real_escape_string($_POST['LastName']);
+    $Position = $conn->real_escape_string($_POST['Position']);
+    $DivisionID = $conn->real_escape_string($_POST['DivisionID']);
+    $Email = $conn->real_escape_string($_POST['Email']);
+    $DateOfBirth = $conn->real_escape_string($_POST['DateOfBirth']);
+    $ClientType = $conn->real_escape_string($_POST['ClientType']);
+    $Sex = $conn->real_escape_string($_POST['Sex']);
+    $Phone = $conn->real_escape_string($_POST['Phone']);
+    $PWD = $conn->real_escape_string($_POST['PWD']);
+    $Address = $conn->real_escape_string($_POST['Address']);
+
+    $Username = $conn->real_escape_string($_POST['Username']);
+    $Password = $conn->real_escape_string($_POST['Password']);
+
+    try {
+        $query = "SELECT * FROM `users` where `Email`=?";
+        $result = $conn->execute_query($query, [$Email]);
+
+        if ($result->num_rows === 0) {
+            $query = "SELECT * FROM `users` where `Username`=?";
+            $result = $conn->execute_query($query, [$Username]);
+
+            if ($result->num_rows === 0) {
+                $Password = password_hash($Password, PASSWORD_DEFAULT);
+                $query = "INSERT INTO users(`FirstName`,`MiddleName`,`LastName`,`Position`,`DivisionID`,`Email`,`DateOfBirth`,`ClientType`,`Sex`,`Phone`,`PWD`,`Address`,`Username`,`Password`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                $result = $conn->execute_query($query, [$FirstName, $MiddleName, $LastName, $Position, $DivisionID, $Email, $DateOfBirth, $ClientType, $Sex, $Phone, $PWD, $Address, $Username, $Password]);
+
+                $response['status'] = 'success';
+                $response['message'] = 'Registration complete!';
+                $response['redirect'] = 'login.php';
+            } else {
+
+                $response['status'] = 'error';
+                $response['message'] = 'Username Already exist!';
+            }
+        } else {
+
+            $response['status'] = 'error';
+            $response['message'] = 'Email Already exist!';
+        }
+    } catch (Exception $e) {
+        $response['status'] = 'error';
+        $response['message'] = $e->getMessage();
+    }
+}
+
+if (isset($_POST['EditProfile'])) {
+    $FirstName = $conn->real_escape_string($_POST['FirstName']);
+    $MiddleName = $conn->real_escape_string($_POST['MiddleName']);
+    $LastName = $conn->real_escape_string($_POST['LastName']);
+    $DivisionID = $conn->real_escape_string($_POST['DivisionID']);
     $Email = $conn->real_escape_string($_POST['Email']);
     $Phone = $conn->real_escape_string($_POST['Phone']);
     $Address = $conn->real_escape_string($_POST['Address']);
 
-    $query = "UPDATE `users` SET `FirstName`=?,`MiddleName`=?,`LastName`=?,`Email`=?,`Phone`=?,`Address`=? WHERE `Username`=?";
-    try {
 
-        $result = $conn->execute_query($query, [$FirstName, $MiddleName, $LastName, $Email, $Phone, $Address, $_SESSION["Username"]]);
+    try {
+        $query = "UPDATE `users` SET `FirstName`=?,`MiddleName`=?,`LastName`=?,`DivisionID`=?,`Email`=?,`Phone`=?,`Address`=? WHERE `id`=?";
+        $result = $conn->execute_query($query, [$FirstName, $MiddleName, $LastName, $DivisionID, $Email, $Phone, $Address, $_SESSION["id"]]);
 
         if ($result) {
 
             $response['status'] = 'success';
             $response['message'] = 'Profile Updated!';
-            $response['redirect'] = '../profile.php';
+            $response['redirect'] = 'profile.php';
         } else {
 
             $response['status'] = 'error';
@@ -75,33 +125,32 @@ if (isset($_POST['UpdateProfile'])) {
     }
 }
 
-if (isset($_POST['UpdatePassword'])) {
-    $CurrentPassword = $conn->real_escape_string($_POST['CurrentPassword']);
+if (isset($_POST['ChangePassword'])) {
+    $Password = $conn->real_escape_string($_POST['Password']);
     $NewPassword = $conn->real_escape_string($_POST['NewPassword']);
-    $VerifyPassword = $conn->real_escape_string($_POST['VerifyPassword']);
-
-    $query = "SELECT * FROM users where Username=?";
+    $VerPassword = $conn->real_escape_string($_POST['VerPassword']);
 
     try {
-        $result = $conn->execute_query($query, [$_SESSION['Username']]);
+        $query = "SELECT * FROM users where `id`=?";
+        $result = $conn->execute_query($query, [$_SESSION['id']]);
 
         if ($result && $result->num_rows === 1) {
 
             $row = $result->fetch_object();
 
-            if (password_verify($CurrentPassword, $row->Password)) {
-                if ($NewPassword == $VerifyPassword) {
+            if (password_verify($Password, $row->Password)) {
+                if ($NewPassword == $VerPassword) {
                     $HashedPassword = password_hash($NewPassword, PASSWORD_DEFAULT);
-                    $query2 = "UPDATE `users` SET `Password`=? WHERE `Username`=?";
+                    $query2 = "UPDATE `users` SET `Password`=? WHERE `id`=?";
                     try {
 
-                        $result2 = $conn->execute_query($query2, [$HashedPassword, $_SESSION["Username"]]);
+                        $result2 = $conn->execute_query($query2, [$HashedPassword, $_SESSION["id"]]);
 
                         if ($result2) {
 
                             $response['status'] = 'success';
                             $response['message'] = 'Password Changed!';
-                            $response['redirect'] = '../profile.php';
+                            $response['redirect'] = 'profile.php';
                         } else {
 
                             $response['status'] = 'error';
@@ -129,6 +178,57 @@ if (isset($_POST['UpdatePassword'])) {
     } catch (Exception $e) {
         $response['status'] = 'error';
         $response['message'] = $e->getMessage();
+    }
+}
+
+if (isset($_POST['ICTRequest'])) {
+    $DateRequested = date('Y-m-d');
+    $Ym = date_create($DateRequested)->format("Ym");
+    $RequestNo = 'REQ-' . $Ym . '-' . str_pad($conn->query("SELECT COUNT(*) AS RequestCount FROM helpdesks WHERE DATE_FORMAT(DateRequested, '%Y%m') = '$Ym'")->fetch_object()->RequestCount + 1, 5, '0', STR_PAD_LEFT);
+
+    $CategoryID = $conn->real_escape_string($_POST['CategoryID']);
+    $SubCategoryID = $conn->real_escape_string($_POST['SubCategoryID']);
+    $PreferredSchedule = $conn->real_escape_string($_POST['PreferredSchedule']);
+    $Complaint = $conn->real_escape_string($_POST['Complaint']);
+
+    $query = "INSERT INTO helpdesks (`RequestNo`, `CategoryID`, `SubCategoryID`, `PreferredSchedule`, `Complaint`, `RequestedBy`, `DateRequested`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $result = $conn->execute_query($query, [$RequestNo, $CategoryID, $SubCategoryID, $PreferredSchedule, $Complaint, $_SESSION['id'], $DateRequested]);
+    $LastID = $conn->insert_id;
+
+    $targetDirectory = "uploads/";
+    foreach ($_FILES["Files"]["tmp_name"] as $key => $tmp_name) {
+        $originalFilename = $_FILES["Files"]["name"][$key];
+        $fileExtension = pathinfo($originalFilename, PATHINFO_EXTENSION);
+
+        $uniqueFilename = uniqid() . '.' . $fileExtension;
+        $targetFile = $targetDirectory . $uniqueFilename;
+
+        if (move_uploaded_file($_FILES["Files"]["tmp_name"][$key], $targetFile)) {
+            $query = "INSERT INTO files (`HelpdeskID`, `FileName`) VALUES (?, ?)";
+            $result = $conn->execute_query($query, [$LastID, $uniqueFilename]);
+        }
+    }
+
+    $response['status'] = 'success';
+    $response['message'] = 'Request Placed!';
+    $response['redirect'] = 'ictrequests.php';
+}
+
+if (isset($_POST['CancelICTRequest'])) {
+    $id = $conn->real_escape_string($_POST['id']);
+
+    $query = "UPDATE helpdesks SET Status=? WHERE id=?";
+    $result = $conn->execute_query($query, ['Cancelled', $id]);
+
+    if ($result) {
+
+        $response['status'] = 'success';
+        $response['message'] = 'Request Cancelled!';
+        $response['redirect'] = 'ictrequests.php';
+    } else {
+
+        $response['status'] = 'error';
+        $response['message'] = 'Failed to cancel!';
     }
 }
 
@@ -171,7 +271,7 @@ if (isset($_POST['ForgotPassword'])) {
     }
 }
 
-if (isset($_POST['ChangePassword'])) {
+if (isset($_POST['UpdatePassword'])) {
     $NewPassword = $conn->real_escape_string($_POST['NewPassword']);
     $VerifyPassword = $conn->real_escape_string($_POST['VerifyPassword']);
 
@@ -227,7 +327,7 @@ if (isset($_POST['ContactUs'])) {
     if (sendEmail('dace.phage@gmail.com', $Subject, 'Senders Name: ' . $Name . '<br>Senders Email: ' . $Email . '<br><br>' . $Message)) {
         $response['status'] = 'success';
         $response['message'] = 'Email Sent!';
-        $response['redirect'] = '../index.html';
+        $response['redirect'] = '../#';
     } else {
         $response['status'] = 'error';
         $response['message'] = 'Unable to Send Email!';

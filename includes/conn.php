@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "DTIRegion6!+";
-$database = "msgitdb";
+$database = "isdsdb";
 
 $conn = new mysqli($servername, $username, $password, $database);
 

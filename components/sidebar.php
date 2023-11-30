@@ -10,8 +10,6 @@
             </a>
         </li><!-- End Dashboard Nav -->
 
-        <li class="nav-heading">Pages</li>
-
         <li class="nav-item">
             <a class="nav-link collapsed" href="profile.php">
                 <i class="bi bi-person"></i>
@@ -19,19 +17,78 @@
             </a>
         </li><!-- End Profile Page Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="helpdesks.php">
-                <i class="bi bi-question-circle"></i>
-                <span>Helpdesks</span>
-            </a>
-        </li><!-- End F.A.Q Page Nav -->
+        <li class="nav-heading">Pages</li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="tasks.php">
-                <i class="bi bi-envelope"></i>
-                <span>Tasks</span>
-            </a>
-        </li><!-- End Contact Page Nav -->
+        <?php
+        switch ($_SESSION['Role']) {
+            case 'Employee':
+        ?>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="ictrequestform.php">
+                        <i class="bi bi-input-cursor-text"></i>
+                        <span>Request Form</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="ictrequests.php">
+                        <i class="bi bi-input-cursor-text"></i>
+                        <span>My Requests</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="includes/logout.php">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            <?php
+                break;
+
+            case 'Staff':
+            ?>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="includes/logout.php">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            <?php
+                break;
+
+            case 'Officer':
+            ?>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="includes/logout.php">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            <?php
+                break;
+
+            case 'Admin':
+            ?>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="includes/logout.php">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            <?php
+                break;
+
+            default:
+            ?>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="includes/logout.php">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+        <?php
+                break;
+        }
+        ?>
 
     </ul>
 

@@ -1,4 +1,5 @@
 <?php
+$page = "Login";
 require_once "includes/conn.php";
 require_once "components/header.php";
 ?>
@@ -11,7 +12,7 @@ require_once "components/header.php";
           <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
             <div class="d-flex justify-content-center py-4">
-              <a href="index.html" class="logo d-flex align-items-center w-auto">
+              <a href="#" class="logo d-flex align-items-center w-auto">
                 <img src="assets/img/logo.png" alt="">
                 <span class="d-none d-lg-block"><?= $website ?></span>
               </a>
@@ -65,54 +66,13 @@ require_once "components/header.php";
                     <p class="small mb-0">Don't have an account? <a href="register.php">Create an account</a></p>
                   </div>
                 </form>
+
                 <script>
                   $(document).ready(function() {
+
                     $("#Login").submit(function(e) {
-                      Swal.fire({
-                        title: "Loading",
-                        html: "Please wait...",
-                        didOpen: () => {
-                          Swal.showLoading();
-                        }
-                      });
                       e.preventDefault();
-                      var formData = $(this).serialize();
-                      $.ajax({
-                        type: "POST",
-                        url: "includes/process.php",
-                        data: formData,
-                        dataType: 'json',
-                        success: function(response) {
-                          setTimeout(function() {
-                            Swal.fire({
-                              icon: response.status,
-                              title: response.message,
-                              showConfirmButton: false,
-                              timer: 1000
-                            }).then(function() {
-                              if (response.redirect) {
-                                window.location.href = response.redirect
-                              }
-                            })
-                          }, 1000)
-                        },
-                        error: function(error) {
-                          // Handle errors here
-                          console.log("Error:", error);
-                          setTimeout(function() {
-                            Swal.fire({
-                              icon: 'error',
-                              title: 'Something went wrong',
-                              showConfirmButton: false,
-                              timer: 750
-                            }).then(function() {
-                              if (response.redirect) {
-                                window.location.href = response.redirect
-                              }
-                            })
-                          }, 1000)
-                        },
-                      });
+                      processForm("#Login");
                     });
                   });
                 </script>

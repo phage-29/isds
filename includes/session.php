@@ -13,8 +13,8 @@ if (isset($_SESSION["id"]) && !empty($_SESSION["id"])) {
 
     $_SESSION['last_activity'] = time();
 
-    $query = "SELECT * FROM `users` WHERE `id`=?";
-    $result = $conn->execute_query($query, [$_SESSION["id"]]);
+    $query = "SELECT * FROM `users` WHERE `id`=? AND `Activation`=?";
+    $result = $conn->execute_query($query, [$_SESSION["id"],'Activated']);
 
     if ($result && $result->num_rows > 0) {
         $acc = $result->fetch_object();

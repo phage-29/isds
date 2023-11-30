@@ -95,29 +95,48 @@ require_once "components/sidebar.php";
                   <th class="text-nowrap">Requestor</th>
                   <th class="text-nowrap">Category</th>
                   <th class="text-nowrap">Date</th>
+                  <th class="text-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-nowrap">REQ-202311-00001</td>
-                  <td class="text-nowrap"><span class="badge bg-primary">On Going</span></td>
-                  <td class="text-nowrap">ORD</td>
-                  <td class="text-nowrap">Jane Doe</td>
-                  <td class="text-nowrap">ICT Equipment Service</td>
-                  <td class="text-nowrap">24/11/2023</td>
-                </tr>
-              </tbody>
-              <tbody>
-
               </tbody>
             </table>
             <!-- End Table with stripped rows -->
             <script>
               $(document).ready(function() {
                 new DataTable('#table', {
-                  colReorder: true,
-                  responsive: true,
-                  // searching: false
+                  'processing': true,
+                  'serverSide': true,
+                  'serverMethod': 'post',
+                  'responsive': true,
+                  'order': [
+                    [0, 'desc']
+                  ],
+                  'ajax': {
+                    'url': 'includes/fetchData/datatable.php'
+                  },
+                  'columns': [{
+                      data: 'RequestNo'
+                    },
+                    {
+                      data: 'Status'
+                    },
+                    {
+                      data: 'Division'
+                    },
+                    {
+                      data: 'Requestor'
+                    },
+                    {
+                      data: 'Category'
+                    },
+                    {
+                      data: 'Date'
+                    },
+                    {
+                      data: 'Action'
+                    }
+                  ]
                 });
               })
             </script>
