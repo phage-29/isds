@@ -232,6 +232,34 @@ if (isset($_POST['CancelICTRequest'])) {
     }
 }
 
+if (isset($_POST['CSF'])) {
+    $HelpdeskID = $conn->real_escape_string($_POST['HelpdeskID']);
+    $Rating1 = $conn->real_escape_string($_POST['Rating1']);
+    $Rating2 = $conn->real_escape_string($_POST['Rating2']);
+    $Rating3 = $conn->real_escape_string($_POST['Rating3']);
+    $Rating4 = $conn->real_escape_string($_POST['Rating4']);
+    $Rating5 = $conn->real_escape_string($_POST['Rating5']);
+    $Comment = $conn->real_escape_string($_POST['Comment']);
+    $Suggestion = $conn->real_escape_string($_POST['Suggestion']);
+
+    $query = "UPDATE helpdesks SET Csf=? WHERE id=?";
+    $result = $conn->execute_query($query, ['Done', $HelpdeskID]);
+
+    $query = "INSERT INTO `isdsdb`.`csfs` (`HelpdeskID`, `Responsiveness`, `Assurance`, `Integrity`, `Reliability`, `Outcome`, `AccessToFacilities`, `Communication`, `OverallRating`, `Comment`, `Suggestion`) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+    $result = $conn->execute_query($query, [$HelpdeskID, $Rating1, $Rating1, $Rating1, $Rating2, $Rating2, $Rating3, $Rating4, $Rating5, $Comment, $Suggestion]);
+
+    if ($result) {
+
+        $response['status'] = 'success';
+        $response['message'] = 'Thank you for submitting your feedback!';
+        $response['redirect'] = 'ictrequests.php';
+    } else {
+
+        $response['status'] = 'error';
+        $response['message'] = 'Failed to Submit!';
+    }
+}
+
 if (isset($_POST['ForgotPassword'])) {
     $Email = $conn->real_escape_string($_POST['Email']);
 
